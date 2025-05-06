@@ -15,6 +15,7 @@ export interface RecognizedText {
   detectedMedicalTerms?: string[];
   processingTime?: number;
   provider?: 'local' | 'gemini'; // Source of the OCR processing
+  medications?: Medication[]; // Extracted medication details
 }
 
 export interface RecognizedWord {
@@ -26,6 +27,14 @@ export interface RecognizedWord {
     x1: number;
     y1: number;
   };
+}
+
+export interface Medication {
+  name: string;
+  dosesPerDay: string;
+  duration: string;
+  totalQuantity: string;
+  isConfirmedName?: boolean; // Flag to indicate if the name is confirmed or auto-generated
 }
 
 export interface OCROptions {

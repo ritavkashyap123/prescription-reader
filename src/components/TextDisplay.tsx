@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Copy, Download, Maximize, Minimize, BookOpen, CloudLightning, CloudOff } from 'lucide-react';
+import { Copy, Download, Maximize, Minimize, BookOpen, CloudLightning, CloudOff, Pill } from 'lucide-react';
 import { ProcessingStatus, RecognizedText } from '../types';
 import { generatePDF } from '../utils/pdf';
+import MedicineSearch from './MedicineSearch';
+import SearchPopup from './SearchPopup';
+import { useCart } from '../context/CartContext';
+import MedicineActionButton from './MedicineActionButton';
 
 interface TextDisplayProps {
   recognizedText: (RecognizedText & { usingFallback?: boolean }) | null;
@@ -12,6 +16,9 @@ interface TextDisplayProps {
 const TextDisplay: React.FC<TextDisplayProps> = ({ recognizedText, status }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [highlightMedical, setHighlightMedical] = useState(true);
+  const [showSearchPopup, setShowSearchPopup] = useState(false);
+  const [searchComplete, setSearchComplete] = useState(false);
+  const { totalItems, setCheckoutSuccess } = useCart();
 
   if (status === ProcessingStatus.IDLE) {
     return null;
@@ -25,7 +32,25 @@ const TextDisplay: React.FC<TextDisplayProps> = ({ recognizedText, status }) => 
 
   const handleDownloadPDF = () => {
     if (recognizedText?.text) {
-      generatePDF(recognizedText.text);
+      generatePDF(recognizedText.text, recognizedText.medications);
+    }
+  };
+
+  const handleDirectSearch = () => {
+    console.log('Direct search button clicked');
+    console.log('Medications available:', recognizedText?.medications);
+    setShowSearchPopup(true);
+  };
+
+  const handleSearchComplete = (found: boolean) => {
+    setShowSearchPopup(false);
+    setSearchComplete(true);
+    
+    // If medicines were found and added to cart, open the cart drawer
+    if (found) {
+      // Trigger cart open by simulating a checkout in cart context
+      setCheckoutSuccess(true);
+      setTimeout(() => setCheckoutSuccess(false), 100);
     }
   };
 
@@ -165,6 +190,12 @@ const TextDisplay: React.FC<TextDisplayProps> = ({ recognizedText, status }) => 
                       )}
                     </p>
                   )}
+                  {recognizedText.medications && recognizedText.medications.length > 0 && (
+                    <p className="text-xs flex items-center gap-1 text-green-600 bg-green-50 px-2 py-0.5 rounded-full">
+                      <Pill size={12} />
+                      <span>Structured Data</span>
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex space-x-2">
@@ -210,6 +241,87 @@ const TextDisplay: React.FC<TextDisplayProps> = ({ recognizedText, status }) => 
                 ? highlightMedicalTerms(recognizedText.text)
                 : recognizedText.text}
             </div>
+
+            {recognizedText.medications && recognizedText.medications.length > 0 && (
+              <div className="mt-4">
+                {/* Get only confirmed medications */}
+                {(() => {
+                  const confirmedMedications = recognizedText.medications.filter(med => med.isConfirmedName !== false);
+                  
+                  if (confirmedMedications.length === 0) {
+                    return (
+                      <div className="bg-amber-50 rounded-lg p-4 text-amber-800 text-sm mb-4">
+                        <p>We detected potential medication information but couldn't confidently identify medicine names.</p>
+                        <p className="mt-1">Please check the extracted text for medication details.</p>
+                      </div>
+                    );
+                  }
+                  
+                  return (
+                    <>
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-sm font-medium text-neutral-700 flex items-center">
+                          <Pill size={16} className="mr-2 text-green-600" />
+                          Extracted Medications ({confirmedMedications.length})
+                        </h4>
+                        
+                        {!searchComplete && confirmedMedications.length > 0 && (
+                          <MedicineActionButton medications={confirmedMedications} />
+                        )}
+                      </div>
+                      <div className="text-xs text-neutral-500 mb-2" 
+                        ref={() => {
+                          console.log('Rendering medications table with:', confirmedMedications);
+                          return null;
+                        }}
+                      ></div>
+                      <div className="bg-white border border-neutral-200 rounded-lg overflow-hidden">
+                        <table className="w-full text-sm">
+                          <thead className="bg-neutral-50 border-b border-neutral-200">
+                            <tr>
+                              <th className="py-2 px-3 text-left font-medium text-neutral-600">Medicine Name</th>
+                              <th className="py-2 px-3 text-left font-medium text-neutral-600">Doses/Day</th>
+                              <th className="py-2 px-3 text-left font-medium text-neutral-600">Duration</th>
+                              <th className="py-2 px-3 text-left font-medium text-neutral-600">Total Quantity</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {confirmedMedications.map((medication, index) => (
+                              <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-neutral-50'}>
+                                <td className="py-3 px-3 text-neutral-800 font-medium">{medication.name}</td>
+                                <td className="py-3 px-3 text-neutral-700">{medication.dosesPerDay}</td>
+                                <td className="py-3 px-3 text-neutral-700">{medication.duration}</td>
+                                <td className="py-3 px-3 text-neutral-700">{medication.totalQuantity}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
+                  );
+                })()}
+                
+                {/* Search Popup */}
+                {showSearchPopup && recognizedText.medications && (
+                  <div ref={() => {
+                    const confirmedMedications = recognizedText.medications?.filter(med => med.isConfirmedName !== false) || [];
+                    console.log('Showing search popup with medications:', confirmedMedications);
+                    return null;
+                  }}>
+                    <SearchPopup 
+                      medications={recognizedText.medications?.filter(med => med.isConfirmedName !== false) || []}
+                      onClose={() => setShowSearchPopup(false)}
+                      onComplete={handleSearchComplete}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+            
+            {/* Add Medicine Search for found medications */}
+            {!searchComplete && recognizedText.medications && recognizedText.medications.length > 0 && (
+              <MedicineSearch medications={recognizedText.medications} />
+            )}
 
             {showDetails && recognizedText.words && recognizedText.words.length > 0 && (
               <div className="mt-4">
