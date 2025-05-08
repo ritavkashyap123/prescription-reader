@@ -57,7 +57,8 @@ export const searchMedicine = async (medicineName: string): Promise<MedicineInfo
       price: price / 10, // Get a decimal price
       dosageForm: form,
       quantity,
-      image: `https://picsum.photos/seed/${hash}/200/200`, // Random but deterministic image
+      // image: `https://picsum.photos/seed/${hash}/200/200`, // Random but deterministic image
+      image: "/medicine.svg",
       originalMedication: null as any // Will be set by the caller
     };
   } catch (error) {

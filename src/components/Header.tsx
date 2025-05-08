@@ -1,48 +1,121 @@
-import React, { useState, useEffect } from 'react';
-import { Pill, ShoppingCart } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, ShoppingCart } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import CartDrawer from './CartDrawer';
 
-const Header: React.FC = () => {
-  const [isCartOpen, setIsCartOpen] = useState(false);
+const Header = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
   const { totalItems, isCheckoutSuccess } = useCart();
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
-  // Auto-open cart when checkout success state changes
   useEffect(() => {
     if (isCheckoutSuccess) {
       setIsCartOpen(true);
     }
   }, [isCheckoutSuccess]);
 
+  const navigation = [
+    { name: 'Home', path: '/' },
+    { name: 'Medicines', path: '/medicines' },
+    { name: 'Scan Prescription', path: '/scanner' }
+  ];
+
   return (
     <>
-      <header className="w-full bg-gradient-to-r from-primary-600 to-secondary-600 text-white py-4 px-6 sm:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between">
-          <div className="flex items-center mb-4 sm:mb-0">
-            <Pill size={28} className="mr-3" />
-            <h1 className="text-2xl font-bold tracking-tight">PharmaVision</h1>
+      <header className="bg-white shadow-sm">
+        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16">
+            <div className="flex items-center">
+              <Link to="/" className="flex items-center">
+                <span className="text-2xl font-bold text-primary-600">Prescriptioner</span>
+              </Link>
+            </div>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex md:items-center md:space-x-8">
+              {navigation.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`text-sm font-medium transition-colors ${location.pathname === item.path
+                      ? 'text-primary-600'
+                      : 'text-neutral-600 hover:text-primary-600'
+                    }`}
+                >
+                  {item.name}
+                </Link>
+              ))}
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="relative p-2 text-neutral-600 hover:text-primary-600 transition-colors"
+              >
+                <ShoppingCart className="h-6 w-6" />
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {totalItems}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="flex items-center md:hidden">
+              <Link
+                to="/cart"
+                className="relative p-2 mr-2 text-neutral-600 hover:text-primary-600 transition-colors"
+              >
+                <ShoppingCart className="h-6 w-6" />
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary-600 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {totalItems}
+                  </span>
+                )}
+              </Link>
+              <button
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                className="p-2 text-neutral-600 hover:text-primary-600 transition-colors"
+              >
+                {isMenuOpen ? (
+                  <X className="h-6 w-6" />
+                ) : (
+                  <Menu className="h-6 w-6" />
+                )}
+              </button>
+            </div>
           </div>
-          
-          <div className="flex items-center">
-            <p className="text-sm sm:text-base text-primary-100 mr-6">
-              Modern Prescription OCR for Pharmacies
-            </p>
-            
-            <button 
-              onClick={() => setIsCartOpen(true)}
-              className="relative p-2 bg-white/20 hover:bg-white/30 rounded-full text-white transition-colors"
+        </nav>
+
+        {/* Mobile Navigation */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden bg-white border-t border-neutral-200"
             >
-              <ShoppingCart size={20} />
-              {totalItems > 0 && (
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-error-500 text-white text-xs rounded-full flex items-center justify-center font-medium">
-                  {totalItems}
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
+              <div className="px-2 pt-2 pb-3 space-y-1">
+                {navigation.map((item) => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`block px-3 py-2 rounded-md text-base font-medium ${location.pathname === item.path
+                        ? 'bg-primary-50 text-primary-600'
+                        : 'text-neutral-600 hover:bg-neutral-50 hover:text-primary-600'
+                      }`}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </header>
-      
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
     </>
   );
