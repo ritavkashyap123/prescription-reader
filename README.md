@@ -1,71 +1,130 @@
-# Prescription OCR Reader
+# Prescriptioner
 
-A modern web application that extracts text from prescription images using advanced OCR technology.
+A modern web application that helps users manage prescriptions, search for medicines, and order them online.
 
-## Features
+![Prescriptioner](https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80)
 
-- **Dual OCR Processing System**:
+## 🚀 Features
+
+### 🔍 Prescription Scanner
+- **AI-Powered OCR Technology**: Quickly digitize paper prescriptions
+- **Dual Processing System**:
   - **Online Mode**: Uses Google's Gemini AI for high-quality text extraction
-    - Supports both Gemini Pro Vision and Gemini 2.0 Flash models
-    - Flash model provides faster processing with optimized performance
   - **Offline Mode**: Falls back to local processing using Tesseract.js when offline
-  - Automatic fallback with clear warning indicators
-
 - **Advanced Image Processing**:
   - Image preprocessing for improved text recognition
-  - Support for multiple languages
   - Medical terminology recognition and enhancement
+  - Support for multiple languages
+- **Batch Processing**: Upload and process multiple prescriptions at once
 
-- **Batch Processing**:
-  - Upload and process multiple images at once
-  - Navigate through batch results easily
-  - Visual indicators for AI vs. local processing
+### 💊 Medicine Catalog
+- **Extensive Database**: Browse through hundreds of medicines from various brands
+- **Advanced Filtering**:
+  - Search by name or brand
+  - Filter by dosage form (tablets, syrups, etc.)
+  - Filter by price range
+  - Filter by brand
+- **Detailed Information**:
+  - Medicine descriptions
+  - Dosage instructions
+  - Pricing information
+  - Brand details
 
-- **Rich Text Output**:
-  - Detailed confidence scores
-  - Medical term highlighting
-  - Word-by-word recognition details
-  - Export to PDF functionality
+### 🛒 Shopping Experience
+- **Cart Functionality**: Add medicines to cart with just one click
+- **Visual Feedback**: Clear indicators for items in cart
+- **Responsive Design**: Optimal shopping experience on all devices
+- **Animated Interface**: Modern, interactive UI with smooth transitions
 
-## Setup
+### 💫 Modern UI/UX
+- **GenZ-Friendly Design**: Contemporary aesthetics with vibrant interactions
+- **Micro-Animations**: Engaging motion design throughout the application
+- **Responsive Layout**: Seamless experience across all device sizes
+- **Accessibility**: Designed with accessibility best practices in mind
 
-1. Clone the repository
-2. Install dependencies:
+## 🛠️ Technologies Used
+
+- **Frontend**:
+  - React with TypeScript
+  - Tailwind CSS for styling
+  - Framer Motion for animations
+  - Lucide React for icons
+  - React Router for navigation
+  
+- **OCR Processing**:
+  - Google Gemini API for AI-powered OCR
+  - Tesseract.js for offline processing
+  
+- **State Management**:
+  - Context API for cart management
+  - React hooks for component state
+
+## 🏗️ Project Structure
+
+- **Pages**:
+  - Landing Page: Introduction to the application
+  - Medicine Listing: Browse and filter medicines
+  - Prescription Scanner: Upload and process prescriptions
+  
+- **Components**:
+  - Header: Navigation and cart access
+  - Footer: Site information and links
+  - Medicine Cards: Display medicine information
+  - Cart: Manage selected medicines
+  - Image Uploader: Handle prescription image uploads
+  - Text Display: Show extracted prescription text
+
+## 📋 Setup
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/prescriptioner.git
+   cd prescriptioner
    ```
+
+2. Install dependencies:
+   ```bash
    npm install
    ```
-3. Set up your Gemini API key:
-   - Sign up for a Gemini API key at https://makersuite.google.com/app/apikey
+
+3. Set up environment variables:
    - Copy `.env.example` to `.env`
-   - Add your API key to the `.env` file
-   
+   - Add your Gemini API key if using AI-powered OCR
+
 4. Start the development server:
-   ```
+   ```bash
    npm run dev
    ```
 
-## Configuration
+5. Build for production:
+   ```bash
+   npm run build
+   ```
 
-The application offers several configuration options:
+## 📱 Usage
 
-- **Language Selection**: Process text in multiple languages (English, Spanish, French, German)
-- **Image Preprocessing**: Enable/disable automatic image enhancement
-- **Medical Terms**: Enable/disable medical terminology recognition
-- **OCR Source**: Choose between AI-powered OCR (online) or local processing
-- **Gemini Model**: Select between Gemini Pro Vision (high accuracy) or Gemini 2.0 Flash (faster processing)
+- **Finding Medicines**: Use the search bar and filters on the Medicine Listing page
+- **Scanning Prescriptions**: Visit the Prescription Scanner page and upload an image
+- **Adding to Cart**: Click "Add to Cart" on any medicine card
+- **Viewing Cart**: Click the cart icon in the header
 
-## Network Awareness
+## 🌐 Browser Support
 
-The application automatically detects your network status and adapts accordingly:
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
 
-- When online, it prioritizes the Gemini AI for high-quality OCR
-- When offline, it seamlessly falls back to local processing
-- Clear visual indicators show which processing method is being used
+## 🤝 Contributing
 
-## Technologies Used
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-- React with TypeScript
-- Tesseract.js for local OCR processing
-- Google Gemini API for AI-powered OCR
-- Tailwind CSS for styling
-- Framer Motion for animations 
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
